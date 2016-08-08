@@ -31,7 +31,7 @@ models.User.sync({}).then(function () {
 	return models.Page.sync({});
 }).then(function () {
 	app.listen(3000, function () {
-		console.log('Server is listening on port 3001');
+		console.log('Server is listening on port 3000');
 	})
 }).catch(console.error);
 
