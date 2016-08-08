@@ -5,6 +5,7 @@ var Page = models.Page;
 var User = models.User;
 
 router.get('/', function (req, res) {
+	Page.findAll().then();
 	res.redirect('/');
 });
 
@@ -20,8 +21,8 @@ router.post('/', function (req, res) {
 		content: content,
 		status: status
 	});
-	page.save().then(function (result) {
-		res.json(result);
+	page.save().then(function (savedPage) {
+		res.redirect(savedPage.route);
 	});
 });
 
@@ -35,7 +36,7 @@ router.get('/:urlTitle', function (req, res, next) {
 			urlTitle: req.params.urlTitle
 		}
 	}).then(function (foundPage) {
-		res.render(foundPage);
+		res.render('wikipage.html', foundPage.dataValues);
 	}).catch(next);
 });
 
