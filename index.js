@@ -3,16 +3,19 @@ var app = express();
 var swig = require('swig');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
+var models = require('./models');
+var wikiRouter = require('./routes/wiki');
 
 //body parser
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json);
+app.use(bodyParser.json());
 
-app.use('/', function (req, res) {
-	console.log('receiving');
-});
 //morgan
 app.use(morgan('dev'));
+
+//send requests to router
+app.use('/wiki', wikiRouter);
+
 
 //swig
 app.set('views', __dirname + '/views');
@@ -21,10 +24,14 @@ app.engine('html', swig.renderFile);
 swig.setDefaults({cache: false});
 
 //setup gets to public folder
-app.use(express.static('views'));
+app.use(express.static('public'));
 
 //start server
-var server = app.listen(1337, function () {
-	console.log('listening on port 1337');
-});
+models.User.sync({}).then(function () {
+	return models.Page.sync({});
+}).then(function () {
+	app.listen(3000, function () {
+		console.log('Server is listening on port 3001');
+	})
+}).catch(console.error);
 
