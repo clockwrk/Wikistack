@@ -5,8 +5,10 @@ var Page = models.Page;
 var User = models.User;
 
 router.get('/', function (req, res) {
-	Page.findAll().then();
-	res.redirect('/');
+	Page.findAll().then(function (pages){
+		console.log(pages);
+		res.render('index.html', {pages});
+	})
 });
 
 router.post('/', function (req, res) {
