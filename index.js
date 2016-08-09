@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var morgan = require('morgan');
 var models = require('./models');
 var wikiRouter = require('./routes/wiki');
+var userRouter = require('./routes/user');
 
 //body parser
 app.use(bodyParser.urlencoded({extended: true}));
@@ -15,6 +16,7 @@ app.use(morgan('dev'));
 
 //send requests to router
 app.use('/wiki', wikiRouter);
+app.use('/users', userRouter);
 
 
 //swig
@@ -27,8 +29,8 @@ swig.setDefaults({cache: false});
 app.use(express.static('public'));
 
 //start server
-models.User.sync({}).then(function () {
-	return models.Page.sync({});
+models.User.sync({force: true}).then(function () {
+	return models.Page.sync({force: true});
 }).then(function () {
 	app.listen(3000, function () {
 		console.log('Server is listening on port 3000');

@@ -17,6 +17,9 @@ var Page = db.define('page', {
 	},
 	status: {
 		type: Sequelize.ENUM('open', 'closed')
+	},
+	tags: {
+		type: Sequelize.ARRAY(Sequelize.TEXT)
 	}
 }, {
 	getterMethods: {
@@ -36,7 +39,7 @@ Page.hook('beforeValidate', function (page) {
 	}
 
 	page.urlTitle = generateUrlTitle(page.title);
-})
+});
 
 var User = db.define('user', {
 	name: {
@@ -49,6 +52,8 @@ var User = db.define('user', {
 		allowNull: false
 	}
 });
+
+Page.belongsTo(User, {as: 'author'});
 
 module.exports = {
 	Page: Page,

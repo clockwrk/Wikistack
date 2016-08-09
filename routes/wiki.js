@@ -5,9 +5,8 @@ var Page = models.Page;
 var User = models.User;
 
 router.get('/', function (req, res) {
-	Page.findAll().then(function (pages){
-		console.log(pages);
-		res.render('index.html', {pages});
+	Page.findAll({}).then(function (pages) {
+		res.render('index', {pages});
 	})
 });
 
@@ -18,13 +17,26 @@ router.post('/', function (req, res) {
 	var title = req.body.title;
 	var content = req.body.content;
 	var status = req.body.status;
-	var page = Page.build({
-		title: title,
-		content: content,
-		status: status
-	});
-	page.save().then(function (savedPage) {
-		res.redirect(savedPage.route);
+
+	User.findOrCreate({
+		where: {
+			name: name,
+			email: email
+		}
+	}).then(function (values) {
+		var user = values[0];
+		var page = Page.build({
+			title: title,
+			content: content,
+			status: status
+		});
+		return page.save().then(function (savedPage) {
+			return page.setAuthor(user);
+		})
+	}).then(function (page) {
+		res.redirect(page.route);
+	}).catch(function (error) {
+		console.log(error);
 	});
 });
 
@@ -36,10 +48,21 @@ router.get('/:urlTitle', function (req, res, next) {
 	Page.findOne({
 		where: {
 			urlTitle: req.params.urlTitle
-		}
-	}).then(function (foundPage) {
-		res.render('wikipage.html', foundPage.dataValues);
-	}).catch(next);
+		},
+		include: [
+			{model: User, as: 'author'}
+		]
+	})
+		.then(function (page) {
+			if (page === null) {
+				res.status(404).send();
+			} else {
+				res.render('wikipage', {
+					page: page
+				});
+			}
+		})
+		.catch(next);
 });
 
 module.exports = router;

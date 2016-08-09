@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h3>Pages Authored By: <a href="/users/{{user.id}}">{{user.name}}</a> ({{user.email}}) </h3>
+<hr>
+<ul class="list-unstyled">
+    {% for page in pages %}
+    <li><a href="{{page.route}}">{{page.title}}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}
